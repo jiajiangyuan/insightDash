@@ -10,7 +10,11 @@ export default defineConfig({
     include: ['src/mock/**/*.ts'],
   },
   layout: {
-    title: 'Dify 性能分析仪表板',
+    title: 'Demo',
+    menu: {
+      custom: true,
+      component: './components/CustomMenu',
+    },
   },
   routes: [
     {
@@ -18,9 +22,32 @@ export default defineConfig({
       redirect: '/dashboard',
     },
     {
-      name: '性能分析',
+      name: '应用性能分析仪表板',
       path: '/dashboard',
       component: './dashboard',
+    },
+    {
+      path: '/workflow',
+      name: '工作流',
+      icon: 'ApiOutlined',
+      routes: [
+        {
+          path: '/workflow/list',
+          name: '工作流列表',
+          component: './workflow/list',
+        },
+        {
+          path: '/workflow/editor',
+          name: '工作流编辑器',
+          component: './workflow/editor',
+        },
+        {
+          path: '/workflow/detail/:id',
+          name: '工作流详情',
+          component: './workflow/detail',
+          hideInMenu: true,
+        },
+      ],
     },
   ],
   npmClient: 'pnpm',

@@ -1,0 +1,57 @@
+.edge-animated {
+  stroke-dasharray: 5;
+  animation: dashdraw 0.5s linear infinite;
+}
+
+@keyframes dashdraw {
+  from {
+    stroke-dashoffset: 10;
+  }
+}
+
+.edge-label {
+  pointer-events: all;
+  user-select: none;
+  cursor: pointer;
+}
+
+.edge-label:hover {
+  filter: brightness(1.2);
+}
+
+/* 自定义箭头样式 */
+.edge-arrow {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1;
+}
+
+/* 不同类型的连线样式 */
+.edge-default {
+  stroke: #b1b1b7;
+}
+
+.edge-success {
+  stroke: #52c41a;
+}
+
+.edge-warning {
+  stroke: #faad14;
+}
+
+.edge-error {
+  stroke: #ff4d4f;
+}
+
+/* 连线宽度变体 */
+.edge-thin {
+  stroke-width: 1;
+}
+
+.edge-normal {
+  stroke-width: 2;
+}
+
+.edge-thick {
+  stroke-width: 3;
+} 

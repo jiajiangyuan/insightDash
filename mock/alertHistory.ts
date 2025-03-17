@@ -1,13 +1,6 @@
 import { Request, Response } from 'express';
 import dayjs from 'dayjs';
 
-interface AlertMetric {
-  name: string;
-  value: number;
-  threshold: number;
-  unit: string;
-}
-
 interface AlertHistoryItem {
   id: string;
   timestamp: string;
