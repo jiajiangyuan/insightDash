@@ -1,0 +1,77 @@
+.node-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  overflow-y: auto;
+}
+
+.node-category {
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.node-category:last-child {
+  border-bottom: none;
+}
+
+.category-title {
+  padding: 8px 16px;
+  font-weight: 500;
+  color: #666;
+  font-size: 13px;
+  background-color: #fafafa;
+}
+
+.category-content {
+  padding: 8px 0;
+}
+
+.node-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  cursor: move;
+  transition: all 0.3s;
+  border-radius: 4px;
+  margin: 0 8px;
+}
+
+.node-item:hover {
+  background-color: #f5f5f5;
+}
+
+.node-item-icon {
+  margin-right: 8px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #1890ff;
+}
+
+.node-item-label {
+  font-size: 14px;
+  color: #333;
+}
+
+/* 自定义滚动条样式 */
+.node-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.node-panel::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.node-panel::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.node-panel::-webkit-scrollbar-thumb:hover {
+  background: #999;
+} 

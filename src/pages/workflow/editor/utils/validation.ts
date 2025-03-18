@@ -4,12 +4,6 @@ import { ValidationError, ParameterValidationRule } from '../types/validation';
 import { nodeValidationRules } from '../config/validationRules';
 import { WorkflowNodeType } from '../types/workflow';
 
-export interface ValidationError {
-  message: string;
-  nodeId?: string;
-  edgeId?: string;
-}
-
 // 检查节点类型是否允许作为源节点
 const isValidSourceNode = (node: WorkflowNode): boolean => {
   return ['input', 'llm', 'prompt', 'data', 'condition', 'loop', 'function', 'api'].includes(node.type);
@@ -246,52 +240,6 @@ export const validateNodeParameters = (node: Node): ValidationError[] => {
   return errors;
 };
 
-// 检测工作流循环
-export const detectCycles = (nodes: Node[], edges: Edge[]): ValidationError[] => {
-  const errors: ValidationError[] = [];
-  const visited = new Set<string>();
-  const recursionStack = new Set<string>();
-
-  const dfs = (nodeId: string) => {
-    visited.add(nodeId);
-    recursionStack.add(nodeId);
-
-    const nodeEdges = edges.filter((edge) => edge.source === nodeId);
-    for (const edge of nodeEdges) {
-      const targetId = edge.target;
-      if (!targetId) continue;
-
-      if (!visited.has(targetId)) {
-        if (dfs(targetId)) {
-          return true;
-        }
-      } else if (recursionStack.has(targetId)) {
-        const sourceNode = nodes.find((n) => n.id === nodeId);
-        const targetNode = nodes.find((n) => n.id === targetId);
-        errors.push({
-          type: 'cycle',
-          nodeId,
-          edgeId: edge.id,
-          message: '检测到工作流循环',
-          details: `循环路径: ${sourceNode?.data.label} -> ${targetNode?.data.label}`,
-        });
-        return true;
-      }
-    }
-
-    recursionStack.delete(nodeId);
-    return false;
-  };
-
-  nodes.forEach((node) => {
-    if (!visited.has(node.id)) {
-      dfs(node.id);
-    }
-  });
-
-  return errors;
-};
-
 // 验证整个工作流
 export const validateWorkflow = (nodes: Node[], edges: Edge[]): ValidationError[] => {
   const errors: ValidationError[] = [];
@@ -305,7 +253,22 @@ export const validateWorkflow = (nodes: Node[], edges: Edge[]): ValidationError[
   });
 
   // 检测循环
-  errors.push(...detectCycles(nodes, edges));
+  if (hasCycle(nodes, edges)) {
+    errors.push({
+      type: 'cycle',
+      message: '工作流中存在循环连接',
+      details: '请检查节点之间的连接关系',
+    });
+  }
+
+  // 检测孤立节点
+  if (hasIsolatedNodes(nodes, edges)) {
+    errors.push({
+      type: 'configuration',
+      message: '工作流中存在孤立节点',
+      details: '所有节点都必须与其他节点相连',
+    });
+  }
 
   return errors;
 };

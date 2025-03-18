@@ -1,0 +1,72 @@
+.custom-node {
+  position: relative;
+  min-width: 150px;
+}
+
+.node-card {
+  background: #fff;
+  border-width: 2px;
+  border-style: solid;
+  transition: all 0.3s;
+}
+
+.node-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.node-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+}
+
+.node-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.node-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f1f1f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.node-status {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+}
+
+/* 节点状态样式 */
+.node-status .ant-badge-status-dot {
+  width: 10px;
+  height: 10px;
+}
+
+/* 连接点样式 */
+.custom-node .react-flow__handle {
+  width: 8px;
+  height: 8px;
+  background-color: #fff;
+  border: 2px solid;
+}
+
+.custom-node .react-flow__handle-top {
+  top: -4px;
+}
+
+.custom-node .react-flow__handle-bottom {
+  bottom: -4px;
+}
+
+/* 选中状态 */
+.custom-node.selected .node-card {
+  box-shadow: 0 0 0 2px #1890ff;
+} 

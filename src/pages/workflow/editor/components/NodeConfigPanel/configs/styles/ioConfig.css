@@ -1,0 +1,154 @@
+.config-section {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.config-section-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f1f1f;
+  margin-bottom: 16px;
+  padding-left: 8px;
+  border-left: 3px solid #1890ff;
+}
+
+/* 表单布局 */
+.ant-form {
+  display: grid;
+  grid-template-columns: 100%;
+  gap: 16px;
+}
+
+.ant-form-item {
+  margin-bottom: 0;
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  align-items: start;
+  gap: 8px;
+}
+
+.ant-form-item-label {
+  text-align: right;
+  padding-right: 8px;
+  line-height: 32px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ant-form-item-control {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 字段列表布局 */
+.field-list {
+  display: grid;
+  gap: 16px;
+  padding: 8px;
+  background: #fafafa;
+  border-radius: 4px;
+}
+
+.field-list-item {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+  background: #fff;
+  border-radius: 4px;
+  padding: 12px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s;
+}
+
+.field-list-item:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* 字段操作区域 */
+.field-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* 开关样式 */
+.ant-switch {
+  min-width: 60px;
+}
+
+/* 分割线样式 */
+.ant-divider {
+  margin: 24px 0;
+  grid-column: 1 / -1;
+}
+
+/* 提示文本样式 */
+.ant-form-item-tooltip {
+  color: #8c8c8c;
+  font-size: 12px;
+}
+
+/* 按钮样式 */
+.ant-btn-dashed {
+  border-style: dashed;
+  width: 100%;
+  margin-top: 8px;
+  height: 40px;
+}
+
+/* 文本域容器 */
+.ant-input-textarea-wrapper {
+  width: 100%;
+}
+
+/* 文本域样式 */
+.ant-input-textarea {
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+}
+
+/* 必填标记样式 */
+.ant-form-item-required::before {
+  display: inline-block;
+  margin-right: 4px;
+  color: #ff4d4f;
+  font-size: 14px;
+  font-family: SimSun, sans-serif;
+  line-height: 1;
+  content: '*';
+}
+
+/* 响应式布局 */
+@media (max-width: 576px) {
+  .ant-form-item {
+    grid-template-columns: 1fr;
+  }
+  
+  .ant-form-item-label {
+    text-align: left;
+    padding-right: 0;
+  }
+  
+  .field-list-item {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 滚动条样式 */
+.config-section::-webkit-scrollbar {
+  width: 6px;
+}
+
+.config-section::-webkit-scrollbar-thumb {
+  background-color: #d9d9d9;
+  border-radius: 3px;
+}
+
+.config-section::-webkit-scrollbar-track {
+  background-color: transparent;
+} 

@@ -49,6 +49,11 @@ export default defineConfig({
         },
       ],
     },
+    {
+      path: '/iCraftEditor',
+      name: 'iCraft Editor',
+      component: './iCraftEditor',
+    },
   ],
   npmClient: 'pnpm',
 });

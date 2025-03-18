@@ -1,36 +1,22 @@
-import React, { useCallback, useState } from 'react';
-import { Button, Space, Select, Modal, message, Input, Switch, Tooltip } from 'antd';
+import React, { useCallback, useState, useEffect } from 'react';
+import { Button, Space, Select, Modal, message, Input, Switch, Tooltip, Layout } from 'antd';
 import ReactFlow, {
   Node,
-  Edge,
   Connection,
   Controls,
-  MiniMap,
   Background,
   useNodesState,
   useEdgesState,
-  addEdge,
   EdgeTypes,
   NodeTypes,
-  NodeProps,
-  OnNodesChange,
-  OnEdgesChange,
-  OnConnect,
   NodeChange,
-  EdgeChange,
-  applyNodeChanges,
-  applyEdgeChanges,
   Panel,
   BackgroundVariant,
-  useStore,
+  ReactFlowProvider,
 } from 'reactflow';
-import {
-  BaseEdge,
-  StraightEdge,
-  StepEdge,
-  SmoothStepEdge,
-} from '@reactflow/core';
 import 'reactflow/dist/style.css';
+import './styles/layout.css';
+import './styles/edges.css';
 import CustomNode from './components/CustomNodes';
 import NodePanel from './components/NodePanel';
 import NodeConfigPanel from './components/NodeConfigPanel';
@@ -42,18 +28,14 @@ import SaveWorkflowModal from './components/SaveWorkflowModal';
 import { WorkflowNode, WorkflowEdge, NodeConfig, NodeType, WorkflowTemplate } from './types';
 import { PlayCircleOutlined, SaveOutlined, ExportOutlined, AppstoreOutlined, BorderOutlined, PlusOutlined, DeleteOutlined, ReloadOutlined } from '@ant-design/icons';
 import { WorkflowExecutor, ExecutionStatus } from './utils/workflowExecutor';
-import { LLMService } from './services/llmService';
-import { useWorkflowStore } from './store/workflowStore';
-import { useWorkflowTemplates } from './hooks/useWorkflowTemplates';
-import { useWorkflowHistory } from './hooks/useWorkflowHistory';
 import { useWorkflowValidation } from './hooks/useWorkflowValidation';
-import { useWorkflowExecution } from './hooks/useWorkflowExecution';
 import { useWorkflowExport } from './hooks/useWorkflowExport';
-import { useWorkflowImport } from './hooks/useWorkflowImport';
 import { useWorkflowAutoLayout } from './hooks/useWorkflowAutoLayout';
 import { useWorkflowGridSnap } from './hooks/useWorkflowGridSnap';
 import CustomEdge from './components/edges/CustomEdge';
-import './styles/edges.css';
+import ValidationPanel from './components/ValidationPanel';
+
+const { Content } = Layout;
 
 const nodeTypes: NodeTypes = {
   input: CustomNode,
@@ -70,55 +52,6 @@ const nodeTypes: NodeTypes = {
 const edgeTypes: EdgeTypes = {
   custom: CustomEdge,
 };
-
-const defaultNodes: WorkflowNode[] = [
-  {
-    id: 'input-1',
-    type: 'input',
-    position: { x: 100, y: 100 },
-    data: {
-      label: '输入节点',
-      description: '工作流的起始节点',
-    },
-  },
-  {
-    id: 'llm-1',
-    type: 'llm',
-    position: { x: 400, y: 100 },
-    data: {
-      label: 'LLM节点',
-      description: '语言模型处理节点',
-      model: 'gpt-3.5-turbo',
-      temperature: 0.7,
-    },
-  },
-  {
-    id: 'output-1',
-    type: 'output',
-    position: { x: 700, y: 100 },
-    data: {
-      label: '输出节点',
-      description: '工作流的结束节点',
-    },
-  },
-];
-
-const defaultEdges: WorkflowEdge[] = [
-  {
-    id: 'edge-1',
-    source: 'input-1',
-    target: 'llm-1',
-    type: 'default',
-    animated: true,
-  },
-  {
-    id: 'edge-2',
-    source: 'llm-1',
-    target: 'output-1',
-    type: 'default',
-    animated: true,
-  },
-];
 
 const defaultEdgeOptions = {
   type: 'custom',
@@ -156,6 +89,17 @@ const WorkflowEditor: React.FC = () => {
   // 使用自定义 hooks
   const { snapToGrid, getSnappedPosition } = useWorkflowGridSnap(gridSize);
   const { applyAutoLayout } = useWorkflowAutoLayout();
+
+  // 使用验证功能
+  const {
+    errors,
+    isValidating,
+    validate,
+    clearErrors,
+    getNodeErrors,
+    getEdgeErrors,
+    getErrorsByType,
+  } = useWorkflowValidation();
 
   const onConnect = useCallback((connection: Connection) => {
     if (!connection.source || !connection.target) return;
@@ -352,6 +296,33 @@ const WorkflowEditor: React.FC = () => {
     setExecutionStatus({});
   }, [setNodes, setEdges]);
 
+  // 监听节点和边的变化，进行验证
+  useEffect(() => {
+    if (nodes.length > 0 || edges.length > 0) {
+      validate(nodes, edges);
+    }
+  }, [nodes, edges, validate]);
+
+  // 处理错误点击
+  const handleErrorClick = useCallback((error: ValidationError) => {
+    if (error.nodeId) {
+      // 聚焦到错误节点
+      const node = nodes.find((n) => n.id === error.nodeId);
+      if (node) {
+        setSelectedNode(node);
+        setIsConfigPanelVisible(true);
+      }
+    }
+    if (error.edgeId) {
+      // 聚焦到错误边
+      const edge = edges.find((e) => e.id === error.edgeId);
+      if (edge) {
+        setSelectedNode(edge as WorkflowNode);
+        setIsConfigPanelVisible(true);
+      }
+    }
+  }, [nodes, edges]);
+
   // 渲染工具栏
   const renderToolbar = () => (
     <Panel position="top-left" className="workflow-toolbar">
@@ -377,24 +348,13 @@ const WorkflowEditor: React.FC = () => {
         <Tooltip title="自动布局">
           <Switch checked={autoLayout} onChange={handleAutoLayout} />
         </Tooltip>
-        <Select
-          value={edgeStyle}
-          onChange={setEdgeStyle}
-          style={{ width: 120 }}
-          options={[
-            { label: '默认', value: 'default' },
-            { label: '直线', value: 'straight' },
-            { label: '折线', value: 'step' },
-            { label: '平滑', value: 'smoothstep' },
-          ]}
-        />
       </Space>
     </Panel>
   );
 
   // 渲染连线配置面板
   const renderEdgeConfig = () => (
-    <Panel position="top-right" className="edge-config-panel">
+    <Panel position="top-left" className="edge-config-panel" style={{ marginTop: '80px' }}>
       <Space direction="vertical" style={{ background: 'white', padding: '10px', borderRadius: '4px' }}>
         <div>
           <div>连线样式</div>
@@ -441,86 +401,100 @@ const WorkflowEditor: React.FC = () => {
             style={{ width: 120 }}
           />
         </div>
-        <div>
-          <div>动画效果</div>
-          <Switch checked={edgeAnimated} onChange={setEdgeAnimated} />
-        </div>
       </Space>
     </Panel>
   );
 
+  // 渲染验证面板
+  const renderValidationPanel = () => {
+    if (!errors || errors.length === 0) return null;
+    return (
+      <ValidationPanel
+        errors={errors}
+        onErrorClick={handleErrorClick}
+      />
+    );
+  };
+
   return (
-    <div style={{ display: 'flex', height: '100vh' }}>
-      <NodePanel />
-      <div style={{ flex: 1, position: 'relative' }}>
-        <ReactFlow
-          nodes={nodes}
-          edges={edges}
-          onNodesChange={handleNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          onDrop={onDrop}
-          onDragOver={onDragOver}
-          onNodeClick={onNodeClick}
-          nodeTypes={nodeTypes}
-          edgeTypes={edgeTypes}
-          defaultEdgeOptions={defaultEdgeOptions}
-          fitView
-          attributionPosition="bottom-left"
-        >
-          <Background
-            variant={BackgroundVariant.Dots}
-            gap={gridSize}
-            size={1}
-            color="#aaa"
-            style={{ backgroundColor: '#f8f8f8' }}
+    <Layout style={{ height: '100%', overflow: 'hidden' }}>
+      <Content style={{ 
+        height: '100%', 
+        display: 'flex', 
+        overflow: 'hidden',
+        position: 'relative'
+      }}>
+        <div style={{ 
+          width: '250px', 
+          height: '100%', 
+          overflow: 'auto', 
+          borderRight: '1px solid #eee',
+          position: 'absolute',
+          left: 0,
+          top: 0,
+          bottom: 0,
+          backgroundColor: '#fff',
+          zIndex: 1
+        }}>
+          <NodePanel />
+        </div>
+        <div style={{ 
+          flex: 1, 
+          position: 'relative', 
+          overflow: 'hidden',
+          marginLeft: '250px',
+          height: '100%'
+        }}>
+          <ReactFlowProvider>
+            <ReactFlow
+              nodes={nodes}
+              edges={edges}
+              onNodesChange={handleNodesChange}
+              onEdgesChange={onEdgesChange}
+              onConnect={onConnect}
+              onDrop={onDrop}
+              onDragOver={onDragOver}
+              onNodeClick={onNodeClick}
+              nodeTypes={nodeTypes}
+              edgeTypes={edgeTypes}
+              defaultEdgeOptions={defaultEdgeOptions}
+              fitView
+              attributionPosition="bottom-left"
+            >
+              <Background
+                variant={BackgroundVariant.Dots}
+                gap={gridSize}
+                size={1}
+                color="#aaa"
+                style={{ backgroundColor: '#f8f8f8' }}
+              />
+              <Controls />
+              {renderToolbar()}
+              {renderEdgeConfig()}
+              {renderValidationPanel()}
+              <ExecutionStatusPanel
+                nodes={nodes}
+                edges={edges}
+                status={executionStatus}
+              />
+            </ReactFlow>
+          </ReactFlowProvider>
+          {selectedNode && (
+            <NodeConfigPanel
+              node={selectedNode}
+              onUpdate={onNodeUpdate}
+              onDelete={onNodeDelete}
+            />
+          )}
+          <TemplateLibrary
+            visible={templateLibraryVisible}
+            onClose={() => setTemplateLibraryVisible(false)}
+            onSelect={handleTemplateSelect}
+            onSave={handleTemplateSave}
           />
-          <Controls />
-          <MiniMap />
-          {renderToolbar()}
-          {renderEdgeConfig()}
-        </ReactFlow>
-        {selectedNode && (
-          <NodeConfigPanel
-            node={selectedNode}
-            onUpdate={onNodeUpdate}
-            onDelete={onNodeDelete}
-          />
-        )}
-        <ExecutionStatusPanel
-          nodes={nodes}
-          edges={edges}
-          status={executionStatus}
-        />
-        <TemplateLibrary
-          visible={templateLibraryVisible}
-          onClose={() => setTemplateLibraryVisible(false)}
-          onSelect={handleTemplateSelect}
-          onSave={handleTemplateSave}
-        />
-        <Modal
-          title="验证错误"
-          open={showValidationModal}
-          onOk={() => setShowValidationModal(false)}
-          onCancel={() => setShowValidationModal(false)}
-        >
-          <ul>
-            {validationErrors.map((error, index) => (
-              <li key={index}>{error.message}</li>
-            ))}
-          </ul>
-        </Modal>
-        <SaveWorkflowModal
-          visible={saveModalVisible}
-          onCancel={() => setSaveModalVisible(false)}
-          onSuccess={handleSaveSuccess}
-          nodes={nodes}
-          edges={edges}
-          workflowId={workflowId}
-          initialValues={{ name: workflowName }}
-        />
-      </div>
-    </div>
+        </div>
+      </Content>
+    </Layout>
   );
 };
 

@@ -1,0 +1,77 @@
+.node-config-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100%;
+  background: white;
+  border-left: 1px solid #f0f0f0;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+.config-card {
+  border: none;
+  border-radius: 0;
+}
+
+.config-card .ant-card-head {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+
+.config-card .ant-card-body {
+  padding: 16px;
+}
+
+.config-section {
+  margin-bottom: 16px;
+}
+
+.config-section-title {
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.parameter-item {
+  margin-bottom: 12px;
+}
+
+.parameter-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.parameter-required {
+  color: #ff4d4f;
+  margin-left: 4px;
+}
+
+.parameter-help {
+  color: #666;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* 滚动条样式 */
+.node-config-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.node-config-panel::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.node-config-panel::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+.node-config-panel::-webkit-scrollbar-thumb:hover {
+  background: #999;
+} 

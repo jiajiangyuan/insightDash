@@ -14,6 +14,7 @@ export interface WorkflowTemplate {
 
 // 工作流节点类型
 export type WorkflowNodeType = 
+  | 'input'
   | 'llm'
   | 'prompt'
   | 'data'

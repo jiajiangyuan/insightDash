@@ -1,9 +1,10 @@
 import React from 'react';
 import { Form, Input, InputNumber, Select, Card, Button, Space, message, Modal } from 'antd';
 import { WorkflowNode, NodeType } from '../types';
+import '../styles/nodeConfig.css';
 
 interface NodeConfigPanelProps {
-  node: WorkflowNode;
+  node: WorkflowNode | null;
   onUpdate: (nodeId: string, data: any) => void;
   onDelete: (nodeId: string) => void;
 }
@@ -14,6 +15,11 @@ const NodeConfigPanel: React.FC<NodeConfigPanelProps> = ({
   onDelete,
 }) => {
   const [form] = Form.useForm();
+
+  // 如果没有选中节点，不显示配置面板
+  if (!node) {
+    return null;
+  }
 
   const handleValuesChange = async (changedValues: any) => {
     try {
@@ -304,41 +310,49 @@ const NodeConfigPanel: React.FC<NodeConfigPanelProps> = ({
   };
 
   return (
-    <Card
-      title="节点配置"
-      style={{ width: 300, height: '100vh', overflowY: 'auto' }}
-      extra={
-        <Button danger onClick={handleDelete}>
-          删除
-        </Button>
-      }
-    >
-      <Form
-        form={form}
-        layout="vertical"
-        initialValues={node.data}
-        onValuesChange={handleValuesChange}
+    <div className={`node-config-panel ${node ? 'visible' : ''}`}>
+      <Card
+        title="节点配置"
+        extra={
+          <Button danger onClick={handleDelete}>
+            删除
+          </Button>
+        }
       >
-        <Form.Item 
-          name="label" 
-          label="节点名称"
-          rules={[
-            { required: true, message: '请输入节点名称' },
-            { min: 2, max: 50, message: '节点名称长度必须在2-50个字符之间' }
-          ]}
+        <Form
+          form={form}
+          layout="vertical"
+          initialValues={node.data}
+          onValuesChange={handleValuesChange}
         >
-          <Input />
-        </Form.Item>
-        <Form.Item 
-          name="description" 
-          label="描述"
-          rules={[{ max: 200, message: '描述不能超过200个字符' }]}
-        >
-          <Input.TextArea rows={2} />
-        </Form.Item>
-        {renderConfigFields()}
-      </Form>
-    </Card>
+          <Form.Item 
+            name="label" 
+            label="节点名称"
+            rules={[
+              { required: true, message: '请输入节点名称' },
+              { 
+                pattern: /^[a-zA-Z0-9_-]+$/, 
+                message: '节点名称只能包含字母、数字、下划线和连字符' 
+              },
+              { min: 2, max: 50, message: '节点名称长度必须在2-50个字符之间' }
+            ]}
+            validateTrigger={['onChange', 'onBlur']}
+            validateFirst
+            help="请输入2-50个字符的节点名称，只能包含字母、数字、下划线和连字符"
+          >
+            <Input placeholder="请输入节点名称" />
+          </Form.Item>
+          <Form.Item 
+            name="description" 
+            label="描述"
+            rules={[{ max: 200, message: '描述不能超过200个字符' }]}
+          >
+            <Input.TextArea rows={2} />
+          </Form.Item>
+          {renderConfigFields()}
+        </Form>
+      </Card>
+    </div>
   );
 };
 

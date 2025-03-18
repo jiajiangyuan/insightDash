@@ -2,8 +2,12 @@
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  max-height: 400px;
+  padding: 16px;
+  width: 300px;
+  max-height: 300px;
   overflow-y: auto;
+  margin-top: 20px;
+  margin-right: 20px;
 }
 
 .validation-error-item {
@@ -29,11 +33,11 @@
 }
 
 .error-title .ant-tag {
-  margin-right: 8px;
+  margin: 0;
 }
 
 .error-title .ant-typography {
-  flex: 1;
+  margin: 0;
 }
 
 .validation-error-item .ant-list-item-meta-description {
@@ -43,11 +47,13 @@
 
 /* 错误类型标签样式 */
 .ant-tag {
-  border-radius: 4px;
-  padding: 0 8px;
-  height: 20px;
-  line-height: 18px;
+  text-transform: capitalize;
+}
+
+/* 错误详情样式 */
+.ant-typography-secondary {
   font-size: 12px;
+  margin-top: 4px;
 }
 
 /* 滚动条样式 */
@@ -61,10 +67,10 @@
 }
 
 .validation-panel::-webkit-scrollbar-thumb {
-  background: #ccc;
+  background: #888;
   border-radius: 3px;
 }
 
 .validation-panel::-webkit-scrollbar-thumb:hover {
-  background: #999;
+  background: #555;
 } 

@@ -1,106 +1,104 @@
 import React from 'react';
-import { Card, Typography } from 'antd';
-import { 
-  ApiOutlined, 
-  CodeOutlined, 
-  DatabaseOutlined, 
-  FunctionOutlined, 
-  RobotOutlined, 
-  SendOutlined, 
-  SyncOutlined,
+import { Tooltip } from 'antd';
+import {
+  ApiOutlined,
+  RobotOutlined,
+  DatabaseOutlined,
   BranchesOutlined,
-  ReloadOutlined
+  ReloadOutlined,
+  ImportOutlined,
+  ExportOutlined,
 } from '@ant-design/icons';
-import { WorkflowNode } from '../types';
-
-const { Title } = Typography;
+import '../styles/nodePanel.css';
 
 const nodeTypes = [
   {
     type: 'input',
     label: '输入节点',
-    description: '工作流的起点,用于接收输入数据',
-    icon: <SendOutlined />,
-  },
-  {
-    type: 'output',
-    label: '输出节点',
-    description: '工作流的终点,用于输出结果',
-    icon: <ApiOutlined />,
+    description: '工作流的起始节点，用于接收输入数据',
+    icon: <ImportOutlined />,
+    category: 'basic'
   },
   {
     type: 'llm',
     label: 'LLM节点',
-    description: '调用大语言模型进行处理',
+    description: '语言模型节点，处理自然语言任务',
     icon: <RobotOutlined />,
+    category: 'ai'
   },
   {
     type: 'prompt',
-    label: '提示词节点',
-    description: '定义提示词模板',
-    icon: <CodeOutlined />,
+    label: 'Prompt节点',
+    description: '提示词模板节点，用于生成或修改提示词',
+    icon: <ApiOutlined />,
+    category: 'ai'
   },
   {
     type: 'data',
     label: '数据节点',
-    description: '存储和处理数据',
+    description: '数据处理节点，用于数据转换和处理',
     icon: <DatabaseOutlined />,
+    category: 'data'
   },
   {
     type: 'condition',
     label: '条件节点',
-    description: '根据条件进行分支处理',
+    description: '条件判断节点，用于流程控制',
     icon: <BranchesOutlined />,
+    category: 'control'
   },
   {
     type: 'loop',
     label: '循环节点',
-    description: '重复执行特定操作',
+    description: '循环处理节点，用于重复执行任务',
     icon: <ReloadOutlined />,
+    category: 'control'
   },
   {
-    type: 'function',
-    label: '函数节点',
-    description: '执行自定义函数',
-    icon: <FunctionOutlined />,
-  },
-  {
-    type: 'api',
-    label: 'API节点',
-    description: '调用外部API服务',
-    icon: <ApiOutlined />,
+    type: 'output',
+    label: '输出节点',
+    description: '工作流的终止节点，用于输出结果',
+    icon: <ExportOutlined />,
+    category: 'basic'
   },
 ];
 
+const categories = {
+  basic: '基础节点',
+  ai: 'AI节点',
+  data: '数据处理',
+  control: '流程控制'
+};
+
 const NodePanel: React.FC = () => {
-  const onDragStart = (event: React.DragEvent, nodeType: WorkflowNode['type']) => {
+  const onDragStart = (event: React.DragEvent, nodeType: string) => {
     event.dataTransfer.setData('application/reactflow', nodeType);
+    event.dataTransfer.effectAllowed = 'move';
   };
 
   return (
-    <div style={{ padding: 16 }}>
-      <Title level={4}>节点类型</Title>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {nodeTypes.map((node) => (
-          <Card
-            key={node.type}
-            size="small"
-            draggable
-            onDragStart={(e) => onDragStart(e, node.type as WorkflowNode['type'])}
-            style={{ cursor: 'grab' }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              {node.icon}
-              <div>
-                <div>{node.label}</div>
-                <div style={{ fontSize: 12, color: '#666' }}>
-                  {node.description}
-                </div>
-              </div>
-            </div>
-          </Card>
-        ))}
-      </div>
+    <div className="node-panel">
+      {Object.entries(categories).map(([category, title]) => (
+        <div key={category} className="node-category">
+          <div className="category-title">{title}</div>
+          <div className="category-content">
+            {nodeTypes
+              .filter(node => node.category === category)
+              .map((type) => (
+                <Tooltip key={type.type} title={type.description} placement="right">
+                  <div
+                    className="node-item"
+                    draggable
+                    onDragStart={(e) => onDragStart(e, type.type)}
+                  >
+                    <div className="node-item-icon">{type.icon}</div>
+                    <div className="node-item-label">{type.label}</div>
+                  </div>
+                </Tooltip>
+              ))}
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

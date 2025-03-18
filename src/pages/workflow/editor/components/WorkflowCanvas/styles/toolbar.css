@@ -1,0 +1,75 @@
+.workflow-toolbar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 200px;
+  background: #fff;
+  border-right: 1px solid #f0f0f0;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  z-index: 1;
+}
+
+.toolbar-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #1f1f1f;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.toolbar-nodes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+.node-item {
+  cursor: grab;
+  transition: all 0.3s;
+}
+
+.node-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}
+
+.node-item:active {
+  cursor: grabbing;
+}
+
+.node-item-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.node-item-icon {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.node-item-label {
+  font-size: 14px;
+  color: #1f1f1f;
+}
+
+/* 滚动条样式 */
+.toolbar-nodes::-webkit-scrollbar {
+  width: 4px;
+}
+
+.toolbar-nodes::-webkit-scrollbar-thumb {
+  background-color: #d9d9d9;
+  border-radius: 2px;
+}
+
+.toolbar-nodes::-webkit-scrollbar-track {
+  background-color: transparent;
+} 

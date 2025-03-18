@@ -1,6 +1,8 @@
 import React from 'react';
-import { Panel, List, Tag, Typography } from 'antd';
+import { List, Tag, Typography } from 'antd';
+import { Panel } from 'reactflow';
 import { ValidationError } from '../types/validation';
+import '../styles/validation.css';
 
 const { Text } = Typography;
 
@@ -42,7 +44,7 @@ const ValidationPanel: React.FC<ValidationPanelProps> = ({ errors, onErrorClick 
 
   return (
     <Panel
-      position="bottom-right"
+      position="top-right"
       className="validation-panel"
       title={`验证结果 (${errors.length} 个问题)`}
     >
